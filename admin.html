@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الإدارة — دم الخير</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== ثيم فاتح كامل ===== */
+        body { background: #F5F5F5; font-family: 'Cairo', sans-serif; margin:0; padding:0; }
+
+        .admin-layout { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+        /* ===== Sidebar ===== */
+        .admin-sidebar {
+            background: white; border-left: 1px solid #E8E8E8;
+            display: flex; flex-direction: column;
+            position: sticky; top: 0; height: 100vh; overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+        }
+        .sidebar-header {
+            padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; gap: 12px;
+            background: linear-gradient(135deg, #C0152A, #8B000F);
+        }
+        .sidebar-logo-icon {
+            width: 38px; height: 38px; background: rgba(255,255,255,0.2);
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 1rem;
+        }
+        .sidebar-logo-text { font-size: 1rem; font-weight: 800; color: white; }
+        .sidebar-logo-text span { color: rgba(255,255,255,0.7); font-weight: 400; font-size: 0.75rem; display: block; }
+        .sidebar-nav { padding: 12px 10px; flex: 1; }
+        .nav-group-label {
+            font-size: 0.65rem; font-weight: 700; color: #ABABAB;
+            text-transform: uppercase; letter-spacing: 1px;
+            padding: 0 10px; margin: 16px 0 6px;
+        }
+        .sidebar-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px; color: #6B6B6B;
+            font-size: 0.875rem; font-weight: 600; transition: all 0.2s;
+            cursor: pointer; border: none; background: none; width: 100%; text-align: right;
+            font-family: 'Cairo', sans-serif; text-decoration: none;
+        }
+        .sidebar-link:hover { background: #FFF0F0; color: #C0152A; }
+        .sidebar-link.active { background: #FFF0F0; color: #C0152A; font-weight: 700; }
+        .sidebar-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+        .sidebar-link .badge-count {
+            margin-right: auto; background: #C0152A; color: white;
+            font-size: 0.65rem; font-weight: 800; padding: 2px 7px;
+            border-radius: 50px; min-width: 20px; text-align: center;
+        }
+        .sidebar-footer { padding: 12px 10px; border-top: 1px solid #F0F0F0; background: #FAFAFA; }
+        .admin-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px; border-radius: 10px; background: white; border: 1px solid #F0F0F0;
+        }
+        .admin-avatar {
+            width: 34px; height: 34px; background: #C0152A;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; color: white; font-size: 0.85rem; font-weight: 800;
+        }
+        .admin-name { font-size: 0.82rem; font-weight: 700; color: #1A1A1A; }
+        .admin-role { font-size: 0.7rem; color: #ABABAB; }
+
+        /* ===== Main ===== */
+        .admin-main { background: #F5F5F5; padding: 0; }
+        .admin-topbar {
+            background: white; border-bottom: 1px solid #E8E8E8;
+            padding: 0 24px; height: 60px; display: flex;
+            align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .topbar-title { font-size: 1rem; font-weight: 700; color: #1A1A1A; }
+        .topbar-actions { display: flex; align-items: center; gap: 10px; }
+        .icon-btn {
+            width: 36px; height: 36px; background: #F5F5F5; border: 1px solid #E8E8E8;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            color: #6B6B6B; cursor: pointer; transition: all 0.2s; position: relative; text-decoration: none;
+        }
+        .icon-btn:hover { background: #FFF0F0; color: #C0152A; border-color: #FFCCCC; }
+        .notif-dot {
+            position: absolute; top: 6px; left: 6px; width: 8px; height: 8px;
+            background: #C0152A; border-radius: 50%; border: 2px solid white;
+        }
+        .admin-content { padding: 24px; }
+
+        /* ===== Stats Cards ===== */
+        .admin-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+        .astat-card {
+            background: white; border: 1px solid #E8E8E8; border-radius: 14px; padding: 20px;
+            transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .astat-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        .astat-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+        .astat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .astat-trend { font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 50px; display: flex; align-items: center; gap: 3px; }
+        .trend-up { background: rgba(22,163,74,0.1); color: #16A34A; }
+        .trend-down { background: rgba(192,21,42,0.1); color: #C0152A; }
+        .astat-value { font-size: 1.8rem; font-weight: 900; color: #1A1A1A; line-height: 1; margin-bottom: 4px; }
+        .astat-label { font-size: 0.78rem; color: #ABABAB; }
+
+        /* ===== Sections ===== */
+        .admin-section { background: white; border: 1px solid #E8E8E8; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .admin-section-header {
+            padding: 16px 20px; border-bottom: 1px solid #F0F0F0;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+        }
+        .admin-section-header h3 { font-size: 0.95rem; font-weight: 700; color: #1A1A1A; }
+        .admin-section-body { padding: 0; overflow-x: auto; }
+
+        /* ===== Table ===== */
+        .admin-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        .admin-table th {
+            padding: 12px 16px; text-align: right; font-size: 0.72rem;
+            font-weight: 700; color: #ABABAB; letter-spacing: 0.5px;
+            border-bottom: 1px solid #F0F0F0; background: #FAFAFA; white-space: nowrap;
+        }
+        .admin-table td {
+            padding: 13px 16px; border-bottom: 1px solid #F5F5F5;
+            font-size: 0.85rem; color: #6B6B6B; vertical-align: middle;
+        }
+        .admin-table tr:last-child td { border-bottom: none; }
+        .admin-table tr:hover td { background: #FAFAFA; }
+        .td-name { color: #1A1A1A; font-weight: 600; }
+        .blood-pill {
+            display: inline-block; padding: 3px 10px; background: rgba(192,21,42,0.1);
+            color: #C0152A; border-radius: 50px; font-size: 0.78rem; font-weight: 800;
+        }
+        .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 50px; font-size: 0.72rem; font-weight: 700; }
+        .status-active   { background: rgba(22,163,74,0.1);  color: #16A34A; }
+        .status-urgent   { background: rgba(192,21,42,0.1);  color: #C0152A; }
+        .status-pending  { background: rgba(212,160,23,0.1); color: #D4A017; }
+        .status-done     { background: #F5F5F5; color: #ABABAB; }
+
+        /* ===== Buttons ===== */
+        .tbl-btn { padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: none; font-family: 'Cairo',sans-serif; transition: all 0.2s; }
+        .tbl-btn-red   { background: rgba(192,21,42,0.1); color: #C0152A; }
+        .tbl-btn-green { background: rgba(22,163,74,0.1); color: #16A34A; }
+        .tbl-btn-gray  { background: #F5F5F5; color: #6B6B6B; border: 1px solid #E8E8E8; }
+        .tbl-btn:hover { filter: brightness(0.9); }
+
+        /* ===== Tabs ===== */
+        .content-tabs { display: none; }
+        .content-tabs.active { display: block; }
+
+        /* ===== Modal ===== */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 16px; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: white; border: 1px solid #E8E8E8; border-radius: 20px; padding: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .modal-title { font-size: 1rem; font-weight: 800; color: #1A1A1A; margin-bottom: 20px; }
+        .modal-form .form-group { margin-bottom: 16px; }
+        .modal-form label { display: block; font-size: 0.8rem; font-weight: 600; color: #6B6B6B; margin-bottom: 6px; }
+        .modal-form input, .modal-form select, .modal-form textarea {
+            width: 100%; padding: 10px 14px; background: #F5F5F5; border: 1.5px solid #E8E8E8;
+            border-radius: 10px; font-family: 'Cairo',sans-serif; font-size: 0.875rem; color: #1A1A1A; outline: none; transition: all 0.2s;
+        }
+        .modal-form input:focus, .modal-form select:focus, .modal-form textarea:focus { border-color: #C0152A; background: white; box-shadow: 0 0 0 3px rgba(192,21,42,0.1); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-modal-save { flex: 1; padding: 12px; background: #C0152A; color: white; border: none; border-radius: 10px; font-family: 'Cairo',sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-modal-save:hover { background: #8B000F; }
+        .btn-modal-cancel { padding: 12px 20px; background: #F5F5F5; color: #6B6B6B; border: 1.5px solid #E8E8E8; border-radius: 10px; font-family: 'Cairo',sans-serif; font-size: 0.9rem; cursor: pointer; }
+        .filter-select { padding: 7px 12px; background: #F5F5F5; border: 1.5px solid #E8E8E8; border-radius: 8px; font-family: 'Cairo',sans-serif; color: #1A1A1A; font-size: 0.82rem; outline: none; cursor: pointer; }
+
+        /* ===== Mobile Menu Button ===== */
+        .admin-mobile-menu-btn {
+            display: none; width: 36px; height: 36px;
+            background: #F5F5F5; border: 1px solid #E8E8E8;
+            border-radius: 10px; align-items: center; justify-content: center;
+            color: #6B6B6B; cursor: pointer; font-size: 1rem;
+        }
+        .admin-sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 499; }
+        .admin-sidebar-overlay.open { display: block; }
+
+        /* ===== Responsive ===== */
+        @media(max-width:1024px){
+            .admin-layout { grid-template-columns: 1fr; }
+            .admin-sidebar {
+                display: none; position: fixed; top: 0; right: 0; bottom: 0;
+                width: 260px; z-index: 500; height: 100vh;
+                transform: translateX(100%); transition: transform 0.3s ease;
+                box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+            }
+            .admin-sidebar.mobile-open { display: flex !important; transform: translateX(0); }
+            .admin-stats { grid-template-columns: repeat(2,1fr); }
+            .admin-mobile-menu-btn { display: flex !important; }
+            .admin-topbar { padding: 0 16px; }
+        }
+
+        @media(max-width:768px){
+            .admin-content { padding: 14px; }
+            .admin-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .astat-card { padding: 14px; }
+            .astat-value { font-size: 1.5rem; }
+            .astat-label { font-size: 0.72rem; }
+
+            /* الجداول تتحول لكروت على الموبايل */
+            .admin-table { min-width: unset; }
+            .admin-table thead { display: none; }
+            .admin-table tbody tr {
+                display: block; background: white;
+                border: 1px solid #E8E8E8; border-radius: 12px;
+                margin-bottom: 10px; padding: 12px 14px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            }
+            .admin-table tbody tr:hover { background: #FAFAFA; }
+            .admin-table td {
+                display: flex; align-items: center; justify-content: space-between;
+                border: none; padding: 5px 0; font-size: 0.82rem;
+                border-bottom: 1px solid #F5F5F5;
+            }
+            .admin-table td:last-child { border-bottom: none; padding-top: 8px; }
+            .admin-table td::before {
+                content: attr(data-label);
+                font-weight: 700; color: #ABABAB;
+                font-size: 0.72rem; min-width: 90px; flex-shrink: 0;
+            }
+            .admin-section-header { flex-direction: column; align-items: flex-start; }
+            .admin-section-header > div { width: 100%; display: flex; gap: 6px; flex-wrap: wrap; }
+            .modal-box { padding: 20px; border-radius: 16px; }
+            .admin-section-body { overflow-x: visible; }
+        }
+
+        @media(max-width:480px){
+            .admin-stats { gap: 8px; }
+            .astat-value { font-size: 1.3rem; }
+            .admin-content { padding: 10px; }
+            .admin-stats { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="adminLoadingScreen" style="position:fixed;inset:0;background:#F5F5F5;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999">
+    <div style="width:52px;height:52px;background:#C0152A;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 0 30px rgba(192,21,42,0.3)">
+        <i class="fas fa-droplet" style="color:white;font-size:1.4rem"></i>
+    </div>
+    <p style="color:#ABABAB;font-size:0.875rem;font-family:'Cairo',sans-serif">جاري التحقق من الصلاحيات...</p>
+</div>
+
+<!-- Access Gate -->
+<div id="adminLoginGate" style="display:none;min-height:100vh;background:#F5F5F5;align-items:center;justify-content:center">
+    <div style="background:white;border:1px solid #E8E8E8;border-radius:20px;padding:48px 40px;width:100%;max-width:400px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.08)">
+        <div style="width:64px;height:64px;background:#FFF0F0;border:1px solid #FFCCCC;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px">
+            <i class="fas fa-lock" style="color:#C0152A;font-size:1.6rem"></i>
+        </div>
+        <h2 style="color:#1A1A1A;font-size:1.2rem;font-weight:800;margin-bottom:10px">صلاحية مرفوضة</h2>
+        <p style="color:#ABABAB;font-size:0.875rem;margin-bottom:8px;line-height:1.7" id="accessMsg">ليس لديك صلاحية الوصول لهذه الصفحة</p>
+        <p style="color:#E8E8E8;font-size:0.78rem;margin-bottom:28px">هذه المنطقة للمشرفين فقط</p>
+        <a href="index.html" style="display:block;padding:13px;background:#C0152A;color:white;border-radius:50px;font-family:'Cairo',sans-serif;font-size:0.95rem;font-weight:700;text-decoration:none">
+            <i class="fas fa-home"></i> العودة للرئيسية
+        </a>
+    </div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="adminDashboard" style="display:none">
+<div class="admin-layout">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo-icon"><i class="fas fa-droplet"></i></div>
+            <div class="sidebar-logo-text">دم الخير<span>لوحة الإدارة</span></div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-group-label">الرئيسية</div>
+            <button class="sidebar-link active" onclick="showTab('overview')">
+                <i class="fas fa-chart-pie"></i> نظرة عامة
+            </button>
+            <div class="nav-group-label">الإدارة</div>
+            <button class="sidebar-link" onclick="showTab('requests')">
+                <i class="fas fa-tint"></i> طلبات الدم
+                <span class="badge-count" id="sidebarRequestsCount">0</span>
+            </button>
+            <button class="sidebar-link" onclick="showTab('donors')">
+                <i class="fas fa-users"></i> المتبرعون
+            </button>
+            <button class="sidebar-link" onclick="showTab('hospitals')">
+                <i class="fas fa-hospital"></i> المستشفيات
+            </button>
+            <button class="sidebar-link" onclick="showTab('users')">
+                <i class="fas fa-user-circle"></i> المستخدمون
+            </button>
+            <button class="sidebar-link" onclick="showTab('admins')">
+                <i class="fas fa-shield-alt"></i> إدارة الأدمنز
+                <span class="badge-count" id="adminsCount" style="background:#F59E0B">0</span>
+            </button>
+            <div class="nav-group-label">الإعدادات</div>
+            <button class="sidebar-link" onclick="showTab('banners')">
+                <i class="fas fa-bullhorn"></i> البنرات الإعلانية
+            </button>
+            <button class="sidebar-link" onclick="showTab('settings')">
+                <i class="fas fa-cog"></i> إعدادات الموقع
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="admin-user">
+                <div class="admin-avatar" id="adminAvatarSidebar">A</div>
+                <div>
+                    <div class="admin-name" id="adminNameSidebar">الأدمن</div>
+                    <div class="admin-role">مشرف عام</div>
+                </div>
+            </div>
+            <button onclick="adminLogout()" style="width:100%;margin-top:10px;padding:9px;background:#FFF0F0;border:1px solid #FFCCCC;border-radius:10px;color:#C0152A;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#C0152A';this.style.color='white'" onmouseout="this.style.background='#FFF0F0';this.style.color='#C0152A'">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-topbar">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="admin-mobile-menu-btn" onclick="toggleAdminSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="topbar-title" id="topbarTitle">نظرة عامة</div>
+            </div>
+            <div class="topbar-actions">
+                <a href="index.html" target="_blank" class="icon-btn" title="عرض الموقع">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+                <div class="icon-btn" id="notifBtn">
+                    <i class="fas fa-bell"></i>
+                    <div class="notif-dot" id="notifDot" style="display:none"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-content">
+
+            <!-- OVERVIEW TAB -->
+            <div id="tab-overview" class="content-tabs active">
+                <div class="admin-stats" id="adminStatsGrid">
+                    <div class="astat-card">
+                        <div class="astat-top">
+                            <div class="astat-icon" style="background:rgba(192,21,42,0.1);color:#C0152A"><i class="fas fa-tint"></i></div>
+                            <span class="astat-trend trend-up"><i class="fas fa-arrow-up"></i> <span id="requestsTrend">0</span></span>
+                        </div>
+                        <div class="astat-value" id="totalRequests">—</div>
+                        <div class="astat-label">إجمالي طلبات الدم</div>
+                    </div>
+                    <div class="astat-card">
+                        <div class="astat-top">
+                            <div class="astat-icon" style="background:rgba(22,163,74,0.1);color:#16A34A"><i class="fas fa-users"></i></div>
+                            <span class="astat-trend trend-up"><i class="fas fa-arrow-up"></i> <span id="donorsTrend">0</span></span>
+                        </div>
+                        <div class="astat-value" id="totalDonors">—</div>
+                        <div class="astat-label">إجمالي المتبرعين</div>
+                    </div>
+                    <div class="astat-card">
+                        <div class="astat-top">
+                            <div class="astat-icon" style="background:rgba(79,70,229,0.1);color:#6366F1"><i class="fas fa-hospital"></i></div>
+                        </div>
+                        <div class="astat-value" id="totalHospitals">—</div>
+                        <div class="astat-label">المستشفيات الشريكة</div>
+                    </div>
+                    <div class="astat-card">
+                        <div class="astat-top">
+                            <div class="astat-icon" style="background:rgba(245,158,11,0.1);color:#F59E0B"><i class="fas fa-bolt"></i></div>
+                            <span class="astat-trend trend-down"><i class="fas fa-circle"></i> طارئ</span>
+                        </div>
+                        <div class="astat-value" id="urgentRequests">—</div>
+                        <div class="astat-label">طلبات طارئة نشطة</div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-clock" style="color:#C0152A;margin-left:8px"></i> آخر طلبات الدم</h3>
+                        <button class="tbl-btn tbl-btn-red" onclick="showTab('requests')">عرض الكل</button>
+                    </div>
+                    <div class="admin-section-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>الفصيلة</th><th>المستشفى</th><th>المحافظة</th><th>الحالة</th><th>الوقت</th><th>إجراء</th></tr>
+                            </thead>
+                            <tbody id="recentRequestsTbody">
+                                <tr><td colspan="6" style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i> جاري التحميل...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REQUESTS TAB -->
+            <div id="tab-requests" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-tint" style="color:#C0152A;margin-left:8px"></i> طلبات الدم</h3>
+                        <div>
+                            <select id="reqStatusFilter" onchange="loadAdminRequests()" class="filter-select">
+                                <option value="">الكل</option>
+                                <option value="active">نشط</option>
+                                <option value="fulfilled">مكتمل</option>
+                                <option value="cancelled">ملغي</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-section-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>الفصيلة</th><th>المريض</th><th>المستشفى</th><th>المحافظة</th><th>الحالة</th><th>التاريخ</th><th>إجراءات</th></tr>
+                            </thead>
+                            <tbody id="allRequestsTbody">
+                                <tr><td colspan="7" style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DONORS TAB -->
+            <div id="tab-donors" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-users" style="color:#16A34A;margin-left:8px"></i> المتبرعون</h3>
+                    </div>
+                    <div class="admin-section-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>الاسم</th><th>الفصيلة</th><th>المحافظة</th><th>الهاتف</th><th>التبرعات</th><th>الحالة</th><th>إجراء</th></tr>
+                            </thead>
+                            <tbody id="donorsTbody">
+                                <tr><td colspan="7" style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOSPITALS TAB -->
+            <div id="tab-hospitals" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-hospital" style="color:#6366F1;margin-left:8px"></i> المستشفيات</h3>
+                        <div>
+                            <button class="tbl-btn tbl-btn-gray" onclick="seedHospitals()"><i class="fas fa-upload"></i> استيراد الافتراضية</button>
+                            <button class="tbl-btn tbl-btn-green" onclick="openHospitalModal()" style="margin-right:6px"><i class="fas fa-plus"></i> إضافة مستشفى</button>
+                        </div>
+                    </div>
+                    <div class="admin-section-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>الاسم</th><th>المحافظة</th><th>النوع</th><th>الهاتف</th><th>بنك الدم</th><th>موثّق</th><th>إجراءات</th></tr>
+                            </thead>
+                            <tbody id="hospitalsTbody">
+                                <tr><td colspan="7" style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- USERS TAB -->
+            <div id="tab-users" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-user-circle" style="color:#F59E0B;margin-left:8px"></i> المستخدمون المسجلون</h3>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                            <input type="search" id="usersSearch" placeholder="🔍 بحث بالاسم أو الهاتف..." oninput="filterUsersTable()"
+                                style="padding:8px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:8px;font-family:Cairo,sans-serif;color:#1A1A1A;outline:none;font-size:0.85rem;width:200px">
+                            <select id="usersRoleFilter" onchange="filterUsersTable()" class="filter-select">
+                                <option value="">الكل</option>
+                                <option value="donor">متبرعون</option>
+                                <option value="patient">محتاجون</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="admin-section-body">
+                        <table class="admin-table">
+                            <thead>
+                                <tr><th>الصورة</th><th>الاسم</th><th>الهاتف</th><th>المحافظة</th><th>فصيلة الدم</th><th>النوع</th><th>التبرعات</th><th>تاريخ التسجيل</th><th>إجراءات</th></tr>
+                            </thead>
+                            <tbody id="usersTbody">
+                                <tr><td colspan="9" style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMINS TAB -->
+            <div id="tab-admins" class="content-tabs">
+                <div class="admin-section" style="margin-bottom:20px">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-shield-alt" style="color:#F59E0B;margin-left:8px"></i> إدارة الأدمنز والصلاحيات</h3>
+                        <button class="tbl-btn tbl-btn-green" onclick="openAddAdminModal()"><i class="fas fa-plus"></i> إضافة أدمن جديد</button>
+                    </div>
+                    <div class="admin-section-body" style="padding:20px">
+                        <div style="background:#FFF0F0;border:1px solid #FFCCCC;border-radius:10px;padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:14px">
+                            <div style="width:42px;height:42px;background:#C0152A;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;flex-shrink:0"><i class="fas fa-crown"></i></div>
+                            <div style="flex:1">
+                                <div style="color:#1A1A1A;font-weight:700;font-size:0.9rem">الأدمن الرئيسي</div>
+                                <div style="color:#ABABAB;font-size:0.8rem" id="superAdminEmail">sales.burjuman1@gmail.com</div>
+                            </div>
+                            <span style="background:#FFF0F0;color:#C0152A;padding:3px 12px;border-radius:50px;font-size:0.75rem;font-weight:700;border:1px solid #FFCCCC">صلاحيات كاملة</span>
+                        </div>
+                        <div id="adminsList" style="display:flex;flex-direction:column;gap:10px">
+                            <div style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3 style="font-size:0.9rem"><i class="fas fa-info-circle" style="color:#ABABAB;margin-left:8px"></i> شرح مستويات الصلاحيات</h3>
+                    </div>
+                    <div class="admin-section-body" style="padding:20px">
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                            <div style="background:#FFF9F0;border:1px solid #FDE68A;border-radius:10px;padding:14px">
+                                <div style="color:#D97706;font-weight:700;margin-bottom:8px;font-size:0.85rem"><i class="fas fa-crown"></i> أدمن كامل</div>
+                                <ul style="color:#ABABAB;font-size:0.78rem;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px">
+                                    <li>✅ إدارة كل البيانات</li><li>✅ حذف المستخدمين</li>
+                                    <li>✅ نشر البنرات</li><li>✅ إضافة مستشفيات</li><li>✅ إدارة الأدمنز</li>
+                                </ul>
+                            </div>
+                            <div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px;padding:14px">
+                                <div style="color:#6366F1;font-weight:700;margin-bottom:8px;font-size:0.85rem"><i class="fas fa-user-shield"></i> أدمن محدود</div>
+                                <ul style="color:#ABABAB;font-size:0.78rem;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px">
+                                    <li>✅ إدارة الطلبات</li><li>✅ إدارة المتبرعين</li>
+                                    <li>✅ نشر البنرات</li><li>❌ حذف مستخدمين</li><li>❌ إدارة الأدمنز</li>
+                                </ul>
+                            </div>
+                            <div style="background:#F0FFF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px">
+                                <div style="color:#16A34A;font-weight:700;margin-bottom:8px;font-size:0.85rem"><i class="fas fa-eye"></i> مشاهد فقط</div>
+                                <ul style="color:#ABABAB;font-size:0.78rem;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px">
+                                    <li>✅ عرض كل البيانات</li><li>❌ لا يمكنه التعديل</li>
+                                    <li>❌ لا يمكنه الحذف</li><li>❌ لا ينشر بنرات</li><li>❌ لا يضيف أدمنز</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BANNERS TAB -->
+            <div id="tab-banners" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-bullhorn" style="color:#F59E0B;margin-left:8px"></i> البنرات الإعلانية</h3>
+                        <button class="tbl-btn tbl-btn-green" onclick="openBannerModal()"><i class="fas fa-plus"></i> بنر جديد</button>
+                    </div>
+                    <div class="admin-section-body" style="padding:20px">
+                        <p style="color:#ABABAB;font-size:0.85rem;margin-bottom:16px">البنرات تظهر في شريط التنبيه أعلى الموقع.</p>
+                        <div id="bannersList" style="display:flex;flex-direction:column;gap:12px">
+                            <div style="text-align:center;padding:30px;color:#ABABAB"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="content-tabs">
+                <div class="admin-section">
+                    <div class="admin-section-header">
+                        <h3><i class="fas fa-cog" style="color:#ABABAB;margin-left:8px"></i> إعدادات الموقع</h3>
+                    </div>
+                    <div class="admin-section-body" style="padding:24px">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+                            <div><label style="display:block;font-size:0.8rem;color:#ABABAB;margin-bottom:8px">اسم الموقع</label>
+                                <input type="text" value="دم الخير" style="width:100%;padding:10px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:8px;font-family:'Cairo',sans-serif;color:#1A1A1A;outline:none"></div>
+                            <div><label style="display:block;font-size:0.8rem;color:#ABABAB;margin-bottom:8px">رقم التواصل</label>
+                                <input type="text" value="07711763931" style="width:100%;padding:10px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:8px;font-family:'Cairo',sans-serif;color:#1A1A1A;outline:none"></div>
+                            <div><label style="display:block;font-size:0.8rem;color:#ABABAB;margin-bottom:8px">البريد الإلكتروني</label>
+                                <input type="text" value="info@damalkheir.iq" style="width:100%;padding:10px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:8px;font-family:'Cairo',sans-serif;color:#1A1A1A;outline:none"></div>
+                            <div><label style="display:block;font-size:0.8rem;color:#ABABAB;margin-bottom:8px">الموقع الافتراضي</label>
+                                <select style="width:100%;padding:10px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:8px;font-family:'Cairo',sans-serif;color:#1A1A1A;outline:none">
+                                    <option>بغداد</option><option>كربلاء</option><option>النجف</option>
+                                </select></div>
+                        </div>
+                        <button style="margin-top:20px;padding:12px 28px;background:#C0152A;color:white;border:none;border-radius:50px;font-family:'Cairo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer" onclick="showToast('تم حفظ الإعدادات ✓','success')">
+                            <i class="fas fa-save"></i> حفظ الإعدادات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</div>
+
+<!-- Modal: Add Hospital -->
+<div class="modal-overlay" id="hospitalModal">
+    <div class="modal-box">
+        <div class="modal-title"><i class="fas fa-hospital" style="color:#C0152A;margin-left:8px"></i> إضافة مستشفى جديد</div>
+        <div class="modal-form">
+            <div class="form-group"><label>اسم المستشفى *</label><input type="text" id="mHospName" placeholder="مستشفى ..."></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group"><label>المحافظة *</label>
+                    <select id="mHospCity"><option value="">اختر...</option><option>بغداد</option><option>البصرة</option><option>الموصل</option><option>كربلاء</option><option>النجف</option><option>أربيل</option><option>كركوك</option><option>ديالى</option><option>بابل</option></select></div>
+                <div class="form-group"><label>النوع</label>
+                    <select id="mHospType"><option>حكومي</option><option>أهلي</option><option>تعليمي</option></select></div>
+            </div>
+            <div class="form-group"><label>العنوان</label><input type="text" id="mHospAddr" placeholder="الحي، الشارع"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="mHospPhone" placeholder="07XX-XXX-XXXX"></div>
+                <div class="form-group"><label>عدد الأسرّة</label><input type="number" id="mHospBeds" placeholder="200"></div>
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:10px">
+                <input type="checkbox" id="mHospBloodBank" style="accent-color:#C0152A;width:16px;height:16px">
+                <label style="margin:0;font-size:0.875rem;color:#6B6B6B">يوجد بنك دم</label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeModal('hospitalModal')">إلغاء</button>
+            <button class="btn-modal-save" onclick="saveHospital()"><i class="fas fa-save"></i> حفظ</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Admin -->
+<div class="modal-overlay" id="addAdminModal">
+    <div class="modal-box" style="max-width:480px">
+        <div class="modal-title"><i class="fas fa-shield-alt" style="color:#F59E0B;margin-left:8px"></i> إضافة أدمن جديد</div>
+        <div class="modal-form">
+            <div class="form-group"><label>البريد الإلكتروني *</label><input type="email" id="newAdminEmail" placeholder="example@gmail.com"></div>
+            <div class="form-group"><label>الاسم (اختياري)</label><input type="text" id="newAdminName" placeholder="اسم الأدمن"></div>
+            <div class="form-group"><label>مستوى الصلاحية *</label>
+                <select id="newAdminRole">
+                    <option value="full">👑 أدمن كامل — كل الصلاحيات</option>
+                    <option value="limited">🛡️ أدمن محدود — بدون حذف وإدارة أدمنز</option>
+                    <option value="viewer">👁️ مشاهد فقط — قراءة بدون تعديل</option>
+                </select>
+            </div>
+            <div style="background:#FFF9F0;border:1px solid #FDE68A;border-radius:8px;padding:12px">
+                <p style="color:#ABABAB;font-size:0.78rem;margin:0;line-height:1.7"><i class="fas fa-info-circle" style="color:#F59E0B;margin-left:6px"></i>سيتم إضافة الأدمن في Firestore. عليه تسجيل الدخول بهذا البريد ليتمكن من الوصول.</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeModal('addAdminModal')">إلغاء</button>
+            <button class="btn-modal-save" onclick="saveNewAdmin()"><i class="fas fa-plus"></i> إضافة الأدمن</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add Banner -->
+<div class="modal-overlay" id="bannerModal">
+    <div class="modal-box" style="max-width:560px">
+        <div class="modal-title"><i class="fas fa-bullhorn" style="color:#F59E0B;margin-left:8px"></i> إضافة بنر / إعلان جديد</div>
+        <div class="modal-form">
+            <div class="form-group"><label>نوع الإعلان *</label>
+                <select id="mBannerType" onchange="onBannerTypeChange(this.value)" style="width:100%">
+                    <option value="urgent">🔴 طلب دم طارئ</option>
+                    <option value="hospital">🏥 إعلان مستشفى / عيادة</option>
+                    <option value="thanks">🌟 شكر وتقدير</option>
+                    <option value="info">🔵 إعلان عام</option>
+                    <option value="success">🟢 خبر إيجابي</option>
+                </select>
+            </div>
+            <div class="form-group" id="bannerImageGroup">
+                <label>صورة الإعلان <span style="color:#ABABAB;font-size:0.78rem">(اختياري)</span></label>
+                <div id="bannerImageUploadArea" onclick="document.getElementById('mBannerImage').click()"
+                    style="border:2px dashed #E8E8E8;border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#FAFAFA"
+                    onmouseover="this.style.borderColor='#C0152A'" onmouseout="this.style.borderColor='#E8E8E8'">
+                    <div id="bannerImagePreview" style="display:none;margin-bottom:10px"><img id="bannerPreviewImg" style="max-height:120px;border-radius:8px;object-fit:cover"></div>
+                    <div id="bannerImagePlaceholder">
+                        <i class="fas fa-cloud-upload-alt" style="font-size:1.8rem;color:#ABABAB;display:block;margin-bottom:8px"></i>
+                        <p style="color:#ABABAB;font-size:0.85rem;margin:0">اضغط لرفع صورة</p>
+                        <p style="color:#E8E8E8;font-size:0.75rem;margin:4px 0 0">JPG, PNG — حجم أقصى 5MB</p>
+                    </div>
+                    <div id="bannerImageLoading" style="display:none">
+                        <i class="fas fa-spinner fa-spin" style="color:#C0152A;font-size:1.5rem"></i>
+                        <p style="color:#ABABAB;font-size:0.85rem;margin:8px 0 0">جاري الرفع...</p>
+                    </div>
+                </div>
+                <input type="file" id="mBannerImage" accept="image/*" style="display:none" onchange="uploadBannerImage(this)">
+                <input type="hidden" id="mBannerImageUrl" value="">
+                <button type="button" id="removeBannerImg" style="display:none;margin-top:6px;background:none;border:none;color:#DC2626;font-size:0.8rem;cursor:pointer;font-family:Cairo,sans-serif" onclick="removeBannerImage()"><i class="fas fa-times"></i> إزالة الصورة</button>
+            </div>
+            <div class="form-group"><label>نص الإعلان *</label>
+                <textarea id="mBannerText" placeholder="مثال: مستشفى الإمام الحسين يعلن عن توفر دم O+ ..." rows="3" style="width:100%;padding:10px 14px;background:#F5F5F5;border:1.5px solid #E8E8E8;border-radius:10px;font-family:Cairo,sans-serif;font-size:0.9rem;color:#1A1A1A;outline:none;resize:vertical"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="form-group"><label>نص الزر</label><input type="text" id="mBannerBtn" placeholder="تواصل معنا"></div>
+                <div class="form-group"><label>رابط الزر (اختياري)</label><input type="text" id="mBannerLink" placeholder="request.html"></div>
+            </div>
+            <div class="form-group" style="display:flex;align-items:center;gap:10px">
+                <input type="checkbox" id="mBannerActive" checked style="accent-color:#C0152A;width:16px;height:16px">
+                <label style="margin:0;font-size:0.875rem;color:#6B6B6B">نشر البنر فوراً</label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeModal('bannerModal');resetBannerModal()">إلغاء</button>
+            <button class="btn-modal-save" onclick="saveBanner()"><i class="fas fa-paper-plane"></i> نشر الإعلان</button>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar Overlay -->
+<div class="admin-sidebar-overlay" id="sidebarOverlay" onclick="toggleAdminSidebar()"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('adminLoginGate').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'none';
+        auth.onAuthStateChanged(async user => {
+            const loadingEl = document.getElementById('adminLoadingScreen');
+            if (loadingEl) loadingEl.style.display = 'none';
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                showDashboard(user);
+            } else {
+                if (user) await auth.signOut();
+                const msg = document.getElementById('accessMsg');
+                if (msg) msg.textContent = user ? 'حسابك (' + user.email + ') ليس لديه صلاحية الوصول' : 'يجب تسجيل الدخول بحساب أدمن أولاً';
+                document.getElementById('adminLoginGate').style.cssText = 'display:flex;min-height:100vh;background:#F5F5F5;align-items:center;justify-content:center';
+            }
+        });
+    });
+
+    function showDashboard(user) {
+        document.getElementById('adminLoginGate').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'block';
+        const initials = (user.displayName || user.email || 'A')[0].toUpperCase();
+        document.getElementById('adminAvatarSidebar').textContent = initials;
+        document.getElementById('adminNameSidebar').textContent = user.displayName || user.email;
+        loadOverview();
+    }
+
+    async function adminLogout() { await auth.signOut(); location.reload(); }
+
+    const tabTitles = { overview:'نظرة عامة', requests:'طلبات الدم', donors:'المتبرعون', hospitals:'المستشفيات', users:'المستخدمون', admins:'إدارة الأدمنز', banners:'البنرات الإعلانية', settings:'الإعدادات' };
+
+    function showTab(name) {
+        document.querySelectorAll('.content-tabs').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        document.getElementById('topbarTitle').textContent = tabTitles[name] || name;
+        event?.target?.classList.add('active');
+        // إغلاق الـ sidebar على الموبايل بعد الاختيار
+        const sidebar = document.querySelector('.admin-sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar.classList.contains('mobile-open')) { sidebar.classList.remove('mobile-open'); overlay.classList.remove('open'); }
+        const loaders = { requests: loadAdminRequests, donors: loadAdminDonors, hospitals: loadAdminHospitals, users: loadAdminUsers, admins: loadAdmins, banners: loadBanners };
+        if (loaders[name]) loaders[name]();
+    }
+
+    async function loadOverview() {
+        try {
+            const [reqSnap, donSnap, hospSnap] = await Promise.all([
+                db.collection('blood_requests').get(),
+                db.collection('donors').get(),
+                db.collection('hospitals').get()
+            ]);
+            const urgent = reqSnap.docs.filter(d => d.data().status==='active' && d.data().urgent).length;
+            document.getElementById('totalRequests').textContent = reqSnap.size;
+            document.getElementById('totalDonors').textContent   = donSnap.size;
+            document.getElementById('totalHospitals').textContent= hospSnap.size || 9;
+            document.getElementById('urgentRequests').textContent = urgent;
+            document.getElementById('sidebarRequestsCount').textContent = reqSnap.docs.filter(d=>d.data().status==='active').length;
+            document.getElementById('notifDot').style.display = urgent > 0 ? 'block' : 'none';
+            const recent = reqSnap.docs.sort((a,b)=>(b.data().createdAt?.seconds||0)-(a.data().createdAt?.seconds||0)).slice(0,8);
+            document.getElementById('recentRequestsTbody').innerHTML = recent.map(d => {
+                const r = d.data();
+                return `<tr>
+                    <td data-label="الفصيلة"><span class="blood-pill">${r.bloodType||'—'}</span></td>
+                    <td data-label="المستشفى" class="td-name">${r.hospital||'—'}</td>
+                    <td data-label="المحافظة">${r.city||'—'}</td>
+                    <td data-label="الحالة">${r.urgent?'<span class="status-pill status-urgent"><i class="fas fa-bolt"></i> طارئ</span>':'<span class="status-pill status-active"><i class="fas fa-circle"></i> نشط</span>'}</td>
+                    <td data-label="الوقت">${r.createdAt?formatArabicTime(r.createdAt):'—'}</td>
+                    <td data-label="إجراء" style="gap:4px">
+                        <button class="tbl-btn tbl-btn-green" onclick="markFulfilled('${d.id}')">مكتمل</button>
+                        <button class="tbl-btn tbl-btn-gray" onclick="cancelRequest('${d.id}')">إلغاء</button>
+                    </td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="6" style="text-align:center;color:#ABABAB;padding:20px">لا توجد طلبات</td></tr>';
+        } catch(e) { console.error(e); }
+    }
+
+    function loadAdminRequests() {
+        const statusFilter = document.getElementById('reqStatusFilter')?.value || '';
+        db.collection('blood_requests').orderBy('createdAt','desc').limit(100).onSnapshot(snap => {
+            let docs = snap.docs.map(d=>({id:d.id,...d.data()}));
+            if (statusFilter) docs = docs.filter(d=>d.status===statusFilter);
+            document.getElementById('allRequestsTbody').innerHTML = docs.map(r=>`<tr>
+                <td data-label="الفصيلة"><span class="blood-pill">${r.bloodType||'—'}</span></td>
+                <td data-label="المريض" class="td-name">${r.patientName||'—'}</td>
+                <td data-label="المستشفى">${r.hospital||'—'}</td>
+                <td data-label="المحافظة">${r.city||'—'}</td>
+                <td data-label="الحالة">${getStatusPill(r.status,r.urgent)}</td>
+                <td data-label="التاريخ">${r.createdAt?formatArabicTime(r.createdAt):'—'}</td>
+                <td data-label="إجراءات" style="gap:4px">
+                    <button class="tbl-btn tbl-btn-green" onclick="markFulfilled('${r.id}')">✓</button>
+                    <button class="tbl-btn tbl-btn-gray" onclick="cancelRequest('${r.id}')">✗</button>
+                    <button class="tbl-btn tbl-btn-red" onclick="deleteDoc('blood_requests','${r.id}')">حذف</button>
+                </td>
+            </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:#ABABAB;padding:20px">لا توجد طلبات</td></tr>';
+        });
+    }
+
+    function loadAdminDonors() {
+        db.collection('donors').orderBy('createdAt','desc').limit(100).onSnapshot(snap => {
+            document.getElementById('donorsTbody').innerHTML = snap.docs.map(d=>{
+                const r=d.data();
+                return `<tr>
+                    <td data-label="الاسم" class="td-name">${r.name||'—'}</td>
+                    <td data-label="الفصيلة"><span class="blood-pill">${r.bloodType||'—'}</span></td>
+                    <td data-label="المحافظة">${r.city||'—'}</td>
+                    <td data-label="الهاتف">${r.phone||'—'}</td>
+                    <td data-label="التبرعات">${r.totalDonations||0}</td>
+                    <td data-label="الحالة"><span class="status-pill ${r.available?'status-active':'status-done'}">${r.available?'متاح':'غير متاح'}</span></td>
+                    <td data-label="إجراء"><button class="tbl-btn tbl-btn-red" onclick="deleteDoc('donors','${d.id}')">حذف</button></td>
+                </tr>`;
+            }).join('') || '<tr><td colspan="7" style="text-align:center;color:#ABABAB;padding:20px">لا يوجد متبرعون</td></tr>';
+        });
+    }
+
+    const localHospitals = [
+        {id:'h1',name:'مستشفى النجاح',city:'بغداد',type:'حكومي',phone:'07700000001',beds:400,bloodBank:true,verified:true},
+        {id:'h2',name:'مستشفى السلام',city:'بغداد',type:'حكومي',phone:'07700000002',beds:300,bloodBank:true,verified:true},
+        {id:'h3',name:'مستشفى ابن سينا',city:'الموصل',type:'تعليمي',phone:'07700000003',beds:500,bloodBank:true,verified:true},
+        {id:'h4',name:'مستشفى الإمام علي',city:'النجف',type:'حكومي',phone:'07700000004',beds:250,bloodBank:true,verified:true},
+        {id:'h5',name:'مستشفى كربلاء التعليمي',city:'كربلاء',type:'تعليمي',phone:'07700000005',beds:350,bloodBank:true,verified:true},
+        {id:'h6',name:'مستشفى البصرة العام',city:'البصرة',type:'حكومي',phone:'07700000006',beds:600,bloodBank:true,verified:true},
+    ];
+
+    function loadAdminHospitals() {
+        db.collection('hospitals').get().then(snap=>{
+            const list = snap.empty ? localHospitals : snap.docs.map(d=>({id:d.id,...d.data()}));
+            document.getElementById('hospitalsTbody').innerHTML = list.map(h=>`<tr>
+                <td data-label="الاسم" class="td-name">${h.name}</td>
+                <td data-label="المحافظة">${h.city}</td>
+                <td data-label="النوع">${h.type||'—'}</td>
+                <td data-label="الهاتف">${h.phone||'—'}</td>
+                <td data-label="بنك الدم">${h.bloodBank?'<span style="color:#16A34A">✓ يوجد</span>':'<span style="color:#ABABAB">✗</span>'}</td>
+                <td data-label="موثّق">${h.verified?'<span style="color:#16A34A">✓</span>':'<span style="color:#ABABAB">—</span>'}</td>
+                <td data-label="إجراءات"><button class="tbl-btn tbl-btn-red" onclick="deleteDoc('hospitals','${h.id}')">حذف</button></td>
+            </tr>`).join('');
+        });
+    }
+
+    let _allUsers = [];
+    function loadAdminUsers() {
+        db.collection('users').limit(200).onSnapshot(snap=>{
+            _allUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
+            renderUsersTable(_allUsers);
+        }, ()=>{
+            db.collection('users').limit(200).get().then(snap=>{
+                _allUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
+                renderUsersTable(_allUsers);
+            });
+        });
+    }
+
+    function renderUsersTable(list) {
+        document.getElementById('usersTbody').innerHTML = list.length ? list.map(r=>`<tr>
+            <td data-label="الصورة">${r.photoURL?`<img src="${r.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`:
+            `<div style="width:32px;height:32px;border-radius:50%;background:#C0152A;display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:0.82rem">${(r.name||'؟')[0]}</div>`}</td>
+            <td data-label="الاسم" class="td-name">${r.name||'—'}</td>
+            <td data-label="الهاتف">${r.phone||'—'}</td>
+            <td data-label="المحافظة">${r.city||'—'}</td>
+            <td data-label="فصيلة الدم"><span class="blood-pill">${r.bloodType||'—'}</span></td>
+            <td data-label="النوع"><span class="status-pill ${r.role==='donor'?'status-active':'status-pending'}">${r.role==='donor'?'متبرع':'محتاج دم'}</span></td>
+            <td data-label="التبرعات">${r.totalDonations||0}</td>
+            <td data-label="تاريخ التسجيل">${r.createdAt?formatArabicTime(r.createdAt):'—'}</td>
+            <td data-label="إجراءات" style="gap:4px">
+                <button class="tbl-btn tbl-btn-gray" onclick="viewUserDetails('${r.id}')"><i class="fas fa-eye"></i></button>
+                <button class="tbl-btn tbl-btn-red" onclick="deleteDoc('users','${r.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`).join('') : '<tr><td colspan="9" style="text-align:center;color:#ABABAB;padding:20px">لا يوجد مستخدمون</td></tr>';
+    }
+
+    function filterUsersTable() {
+        const search = document.getElementById('usersSearch')?.value?.toLowerCase()||'';
+        const role = document.getElementById('usersRoleFilter')?.value||'';
+        renderUsersTable(_allUsers.filter(u=>(!search||(u.name||'').toLowerCase().includes(search)||(u.phone||'').includes(search))&&(!role||u.role===role)));
+    }
+
+    function viewUserDetails(uid) {
+        const u = _allUsers.find(x=>x.id===uid); if(!u) return;
+        alert([`الاسم: ${u.name||'—'}`,`الهاتف: ${u.phone||'—'}`,`البريد: ${u.email||'—'}`,`المحافظة: ${u.city||'—'}`,`فصيلة الدم: ${u.bloodType||'—'}`,`النوع: ${u.role==='donor'?'متبرع':'محتاج دم'}`,`التبرعات: ${u.totalDonations||0}`,`مدخن: ${u.isSmoker?'نعم':'لا'}`,`أمراض مزمنة: ${u.hasChronicDisease?'نعم':'لا'}`].join('\n'));
+    }
+
+    function loadBanners() {
+        db.collection('banners').onSnapshot(snap=>{
+            const list = document.getElementById('bannersList');
+            if(snap.empty){list.innerHTML='<p style="color:#ABABAB;text-align:center;padding:20px">لا توجد بنرات — أضف واحداً!</p>';return;}
+            const typeLabels={urgent:'طلب دم طارئ 🔴',hospital:'إعلان مستشفى 🏥',thanks:'شكر وتقدير 🌟',info:'إعلان عام 🔵',success:'خبر إيجابي 🟢'};
+            const colors={urgent:'#FFF0F0',hospital:'#F5F3FF',thanks:'#FEFCE8',info:'#EFF6FF',success:'#F0FFF4'};
+            const borders={urgent:'#FFCCCC',hospital:'#DDD6FE',thanks:'#FDE68A',info:'#BFDBFE',success:'#BBF7D0'};
+            const textColors={urgent:'#C0152A',hospital:'#6366F1',thanks:'#D97706',info:'#2563EB',success:'#16A34A'};
+            list.innerHTML = snap.docs.map(d=>{
+                const b=d.data();
+                return `<div style="background:${colors[b.type]||colors.urgent};border:1px solid ${borders[b.type]||borders.urgent};border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px">
+                    ${b.imageUrl?`<img src="${b.imageUrl}" style="width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0">` :''}
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                            <span style="color:${textColors[b.type]||textColors.urgent};font-size:0.75rem;font-weight:700">${typeLabels[b.type]||'إعلان'}</span>
+                            <span class="status-pill ${b.active?'status-active':'status-done'}">${b.active?'نشط':'مخفي'}</span>
+                        </div>
+                        <p style="color:#1A1A1A;font-size:0.875rem;margin:0 0 4px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${b.text}</p>
+                        ${b.btnText?`<span style="color:#ABABAB;font-size:0.78rem">زر: "${b.btnText}"</span>`:''}
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+                        <button class="tbl-btn tbl-btn-gray" onclick="toggleBanner('${d.id}',${b.active})">${b.active?'إخفاء':'إظهار'}</button>
+                        <button class="tbl-btn tbl-btn-red" onclick="deleteDoc('banners','${d.id}')">حذف</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }, ()=>{
+            db.collection('banners').onSnapshot(snap=>{
+                if(snap.empty){document.getElementById('bannersList').innerHTML='<p style="color:#ABABAB;text-align:center;padding:20px">لا توجد بنرات</p>';return;}
+                document.getElementById('bannersList').innerHTML=snap.docs.map(d=>`<div style="background:white;border:1px solid #E8E8E8;border-radius:10px;padding:14px">${d.data().text}</div>`).join('');
+            });
+        });
+    }
+
+    async function markFulfilled(id) { await db.collection('blood_requests').doc(id).update({status:'fulfilled'}); showToast('تم تحديد الطلب كمكتمل ✓','success'); loadOverview(); }
+    async function cancelRequest(id) { await db.collection('blood_requests').doc(id).update({status:'cancelled'}); showToast('تم إلغاء الطلب','info'); loadOverview(); }
+    async function deleteDoc(collection, id) { if(!confirm('هل أنت متأكد من الحذف؟')) return; await db.collection(collection).doc(id).delete(); showToast('تم الحذف','info'); loadOverview(); }
+    async function toggleBanner(id, currentActive) { await db.collection('banners').doc(id).update({active:!currentActive}); }
+
+    function openHospitalModal() { document.getElementById('hospitalModal').classList.add('open'); }
+    function openBannerModal() { document.getElementById('bannerModal').classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    async function saveHospital() {
+        const name=document.getElementById('mHospName').value.trim();
+        const city=document.getElementById('mHospCity').value;
+        if(!name||!city) return showToast('اسم المستشفى والمحافظة مطلوبان','error');
+        await db.collection('hospitals').add({name,city,type:document.getElementById('mHospType').value,address:document.getElementById('mHospAddr').value,phone:document.getElementById('mHospPhone').value,beds:parseInt(document.getElementById('mHospBeds').value)||0,bloodBank:document.getElementById('mHospBloodBank').checked,verified:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+        closeModal('hospitalModal'); showToast('تم إضافة المستشفى ✓','success'); loadAdminHospitals();
+    }
+
+    const IMGBB_KEY = '5f6aa85734c193cfb5d15484c21a829e';
+    async function uploadBannerImage(input) {
+        const file=input.files[0]; if(!file) return;
+        if(file.size>5*1024*1024) return showToast('الصورة أكبر من 5MB','error');
+        document.getElementById('bannerImagePlaceholder').style.display='none';
+        document.getElementById('bannerImageLoading').style.display='block';
+        try {
+            const formData=new FormData(); formData.append('image',file);
+            const res=await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`,{method:'POST',body:formData});
+            const data=await res.json(); if(!data.success) throw new Error('فشل الرفع');
+            const url=data.data.url;
+            document.getElementById('mBannerImageUrl').value=url;
+            document.getElementById('bannerPreviewImg').src=url;
+            document.getElementById('bannerImagePreview').style.display='block';
+            document.getElementById('bannerImageLoading').style.display='none';
+            document.getElementById('bannerImagePlaceholder').style.display='none';
+            document.getElementById('removeBannerImg').style.display='inline-block';
+            showToast('تم رفع الصورة ✓','success');
+        } catch(e) { document.getElementById('bannerImagePlaceholder').style.display='block'; document.getElementById('bannerImageLoading').style.display='none'; showToast('فشل رفع الصورة','error'); }
+    }
+    function removeBannerImage() { document.getElementById('mBannerImageUrl').value=''; document.getElementById('mBannerImage').value=''; document.getElementById('bannerPreviewImg').src=''; document.getElementById('bannerImagePreview').style.display='none'; document.getElementById('bannerImagePlaceholder').style.display='block'; document.getElementById('removeBannerImg').style.display='none'; }
+    function onBannerTypeChange(type) {
+        const ph={urgent:'مطلوب فصيلة O- في مستشفى الإمام الحسين',hospital:'مستشفى السلام يعلن عن افتتاح قسم جديد',thanks:'شكر للمتبرع أحمد الكعبي',info:'إعلان مهم لجميع المستخدمين',success:'تم إنقاذ 3 أرواح هذا الأسبوع'};
+        const btnPh={urgent:'ساعد الآن',hospital:'تواصل مع المستشفى',thanks:'شاهد القصة',info:'اقرأ المزيد',success:'اعرف التفاصيل'};
+        document.getElementById('mBannerText').placeholder=ph[type]||ph.info;
+        document.getElementById('mBannerBtn').placeholder=btnPh[type]||'اضغط هنا';
+    }
+    function resetBannerModal() { document.getElementById('mBannerText').value=''; document.getElementById('mBannerBtn').value=''; document.getElementById('mBannerLink').value=''; document.getElementById('mBannerType').value='urgent'; document.getElementById('mBannerActive').checked=true; removeBannerImage(); }
+    async function saveBanner() {
+        const text=document.getElementById('mBannerText').value.trim();
+        if(!text) return showToast('يرجى إدخال نص الإعلان','error');
+        const btn=document.querySelector('#bannerModal .btn-modal-save');
+        if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري النشر...';}
+        try {
+            await db.collection('banners').add({text,type:document.getElementById('mBannerType').value||'urgent',link:document.getElementById('mBannerLink').value||'',btnText:document.getElementById('mBannerBtn').value||'اعرف المزيد',imageUrl:document.getElementById('mBannerImageUrl').value||'',active:document.getElementById('mBannerActive')?.checked??true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+            closeModal('bannerModal'); resetBannerModal(); showToast('تم نشر الإعلان بنجاح ✓','success');
+        } catch(e) { showToast('حدث خطأ في النشر','error'); }
+        finally { if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-paper-plane"></i> نشر الإعلان';} }
+    }
+    function getStatusPill(status,urgent) {
+        if(status==='fulfilled') return '<span class="status-pill status-done">مكتمل</span>';
+        if(status==='cancelled') return '<span class="status-pill" style="background:#F5F5F5;color:#ABABAB">ملغي</span>';
+        if(urgent) return '<span class="status-pill status-urgent"><i class="fas fa-bolt"></i> طارئ</span>';
+        return '<span class="status-pill status-active"><i class="fas fa-circle"></i> نشط</span>';
+    }
+    async function seedHospitals() {
+        const defaults=[{name:'مستشفى النجاح',city:'بغداد',address:'الكرخ',phone:'07700000001',type:'حكومي',beds:400,bloodBank:true,verified:true},{name:'مستشفى السلام',city:'بغداد',address:'المنصور',phone:'07700000002',type:'حكومي',beds:300,bloodBank:true,verified:true},{name:'مستشفى ابن سينا',city:'الموصل',address:'حي النور',phone:'07700000003',type:'تعليمي',beds:500,bloodBank:true,verified:true},{name:'مستشفى الإمام علي',city:'النجف',address:'شارع الرسول',phone:'07700000004',type:'حكومي',beds:250,bloodBank:true,verified:true},{name:'مستشفى كربلاء التعليمي',city:'كربلاء',address:'حي العباس',phone:'07700000005',type:'تعليمي',beds:350,bloodBank:true,verified:true},{name:'مستشفى البصرة العام',city:'البصرة',address:'شارع الميناء',phone:'07700000006',type:'حكومي',beds:600,bloodBank:true,verified:true}];
+        if(!confirm(`سيتم إضافة ${defaults.length} مستشفيات. متابعة؟`)) return;
+        try { const batch=db.batch(); defaults.forEach(h=>{const ref=db.collection('hospitals').doc();batch.set(ref,{...h,createdAt:firebase.firestore.FieldValue.serverTimestamp()});}); await batch.commit(); showToast('تم استيراد المستشفيات ✓','success'); loadAdminHospitals(); } catch(e) { showToast('خطأ: '+e.message,'error'); }
+    }
+    function loadAdmins() {
+        db.collection('admins').onSnapshot(snap=>{
+            const list=document.getElementById('adminsList');
+            document.getElementById('adminsCount').textContent=snap.size;
+            if(snap.empty){list.innerHTML='<p style="color:#ABABAB;text-align:center;padding:20px">لا يوجد أدمنز مضافون</p>';return;}
+            const roleLabels={full:'👑 أدمن كامل',limited:'🛡️ أدمن محدود',viewer:'👁️ مشاهد فقط'};
+            const roleColors={full:'#FFF0F0',limited:'#F5F3FF',viewer:'#F0FFF4'};
+            const roleText={full:'#C0152A',limited:'#6366F1',viewer:'#16A34A'};
+            list.innerHTML=snap.docs.map(d=>{
+                const a=d.data();
+                return `<div style="background:white;border:1px solid #E8E8E8;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+                    <div style="width:40px;height:40px;background:${roleColors[a.role]||roleColors.limited};border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fas fa-user-shield" style="color:${roleText[a.role]||roleText.limited}"></i></div>
+                    <div style="flex:1"><div style="color:#1A1A1A;font-weight:700;font-size:0.875rem">${a.name||'أدمن'}</div><div style="color:#ABABAB;font-size:0.78rem">${a.email||'—'}</div></div>
+                    <span style="background:${roleColors[a.role]||roleColors.limited};color:${roleText[a.role]||roleText.limited};padding:3px 12px;border-radius:50px;font-size:0.75rem;font-weight:700">${roleLabels[a.role]||'أدمن'}</span>
+                    <div style="display:flex;gap:6px">
+                        <select onchange="changeAdminRole('${d.id}',this.value)" class="filter-select" style="font-size:0.75rem;padding:4px 8px">
+                            <option value="full" ${a.role==='full'?'selected':''}>كامل</option>
+                            <option value="limited" ${a.role==='limited'?'selected':''}>محدود</option>
+                            <option value="viewer" ${a.role==='viewer'?'selected':''}>مشاهد</option>
+                        </select>
+                        <button class="tbl-btn tbl-btn-red" onclick="removeAdmin('${d.id}','${a.email||''}')"><i class="fas fa-user-minus"></i> إزالة</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }, ()=>{ document.getElementById('adminsList').innerHTML='<p style="color:#ABABAB;text-align:center;padding:20px">تعذر تحميل الأدمنز</p>'; });
+    }
+    function openAddAdminModal() { document.getElementById('newAdminEmail').value=''; document.getElementById('newAdminName').value=''; document.getElementById('newAdminRole').value='full'; document.getElementById('addAdminModal').classList.add('open'); }
+    async function saveNewAdmin() {
+        const email=document.getElementById('newAdminEmail').value.trim().toLowerCase();
+        const name=document.getElementById('newAdminName').value.trim();
+        const role=document.getElementById('newAdminRole').value;
+        if(!email||!email.includes('@')) return showToast('يرجى إدخال بريد إلكتروني صحيح','error');
+        if(email==='sales.burjuman1@gmail.com') return showToast('هذا الأدمن الرئيسي — موجود بالفعل','error');
+        const btn=document.querySelector('#addAdminModal .btn-modal-save');
+        if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> جاري الإضافة...';}
+        try {
+            const existing=await db.collection('admins').where('email','==',email).get();
+            if(!existing.empty){showToast('هذا البريد مضاف مسبقاً','error');return;}
+            await db.collection('admins').add({email,name:name||email.split('@')[0],role,addedBy:'sales.burjuman1@gmail.com',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+            closeModal('addAdminModal'); showToast(`تم إضافة الأدمن ${email} ✓`,'success');
+        } catch(e) { showToast('حدث خطأ: '+e.message,'error'); }
+        finally { if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-plus"></i> إضافة الأدمن';} }
+    }
+    async function changeAdminRole(docId,newRole) { try { await db.collection('admins').doc(docId).update({role:newRole}); showToast('تم تغيير الصلاحية ✓','success'); } catch(e) { showToast('حدث خطأ','error'); } }
+    async function removeAdmin(docId,email) { if(!confirm(`هل تريد إزالة الأدمن "${email}" ؟`)) return; try { await db.collection('admins').doc(docId).delete(); showToast('تم إزالة الأدمن','info'); } catch(e) { showToast('حدث خطأ','error'); } }
+
+    function toggleAdminSidebar() {
+        const sidebar=document.querySelector('.admin-sidebar');
+        const overlay=document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('open');
+    }
+    document.querySelectorAll('.modal-overlay').forEach(m=>{ m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }); });
+</script>
+</body>
+</html>
